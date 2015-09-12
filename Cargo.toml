@@ -1,0 +1,12 @@
+[package]
+name = "wave_timeline"
+version = "0.1.0"
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+piston2d-graphics = "0.9.0"
+
+[dev-dependencies]
+piston_window = "0.20.0"
