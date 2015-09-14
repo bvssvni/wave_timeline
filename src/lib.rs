@@ -18,6 +18,12 @@ impl Timeline {
     }
 
     pub fn draw_timeline<G: Graphics>(&self, c: &Context, g: &mut G) {
+        let left_to_frame: f64 = 5.0;
+        let top_to_frame: f64 = 10.0;
+        let frame_width: f64 = 10.0;
+        let frame_height: f64 = 10.0;
+        let frame_offset_x: f64 = 5.0;
+
         // Draw bounds to see where the control is.
         {
             use graphics::Rectangle;
@@ -31,7 +37,23 @@ impl Timeline {
             Rectangle::new_border([0.0, 0.0, 1.0, 1.0], 0.5)
                 .draw(bounds, &c.draw_state, c.transform, g);
         }
-        
+
+        // Draw a sequence of squares for each frame.
+        {
+            use graphics::Rectangle;
+
+            let rect = Rectangle::new_border([0.0, 0.0, 1.0, 1.0], 0.5);
+            for i in 0..self.frames {
+                let bounds = [
+                    self.bounds[0] as f64 + left_to_frame +
+                        i as f64 * (frame_width + frame_offset_x),
+                    self.bounds[1] as f64 + top_to_frame,
+                    frame_width,
+                    frame_height
+                ];
+                rect.draw(bounds, &c.draw_state, c.transform, g);
+            }
+        }
     }
 
     pub fn draw_drag<G: Graphics>(&self, c: &Context, g: &mut G) {
