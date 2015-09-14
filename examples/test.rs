@@ -8,6 +8,7 @@ fn main() {
     let window: PistonWindow =
         WindowSettings::new("wave_timeline: test", [1024, 768])
         .exit_on_esc(true)
+        .samples(8)
         .build()
         .unwrap();
 
