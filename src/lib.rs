@@ -25,6 +25,7 @@ impl Timeline {
         let frame_offset_x: f64 = 5.0;
         let slide_offset: f64 = 0.0;
         let left_to_goto_beginning: f64 = 15.0;
+        let right_to_goto_end: f64 = 15.0;
 
         // Draw bounds to see where the control is.
         {
@@ -114,6 +115,20 @@ impl Timeline {
                 ],
                 [
                     -frame_width * 0.5,
+                    frame_height
+                ],
+                &line,
+                c, g
+            );
+
+            draw_double_arrow(
+                [
+                    self.bounds[0] as f64 + self.bounds[2] as f64
+                        - right_to_goto_end,
+                    self.bounds[1] as f64 + top_to_frame
+                ],
+                [
+                    frame_width * 0.5,
                     frame_height
                 ],
                 &line,
