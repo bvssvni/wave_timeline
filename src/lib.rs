@@ -102,13 +102,32 @@ impl Timeline {
                 draw_triangle(offset, scale_up, line, c, g);
             }
 
+            fn draw_goto_end<G: Graphics>(
+                at_end: bool,
+                offset: graphics::math::Vec2d,
+                scale_up: graphics::math::Vec2d,
+                line: &Line,
+                c: &Context,
+                g: &mut G
+            ) {
+                if !at_end {
+                    draw_triangle(offset, scale_up, line, c, g);
+                }
+
+                line.draw([
+                    offset[0] + scale_up[0], offset[1],
+                    offset[0] + scale_up[0], offset[1] + scale_up[1]
+                ], &c.draw_state, c.transform, g);
+            }
+
             use graphics::Line;
             use graphics::math::*;
 
             let line = Line::new([0.0, 0.0, 1.0, 1.0], 0.5);
 
-            // Draw left double arrow.
-            draw_double_arrow(
+            let at_beginning: bool = false;
+            draw_goto_end(
+                at_beginning,
                 [
                     self.bounds[0] as f64 + left_to_goto_beginning,
                     self.bounds[1] as f64 + top_to_frame
@@ -121,7 +140,9 @@ impl Timeline {
                 c, g
             );
 
-            draw_double_arrow(
+            let at_end: bool = true;
+            draw_goto_end(
+                at_end,
                 [
                     self.bounds[0] as f64 + self.bounds[2] as f64
                         - right_to_goto_end,
