@@ -13,6 +13,8 @@ pub struct Timeline {
     pub start_frame: u32,
     pub bounds: [u32; 4],
     pub settings: TimelineSettings,
+    pub hover_goto_start: bool,
+    pub hover_goto_end: bool,
 }
 
 pub struct TimelineSettings {
@@ -22,9 +24,15 @@ pub struct TimelineSettings {
     pub frame_width: f64,
     pub frame_height: f64,
     pub frame_offset_x: f64,
-    pub left_to_goto_beginning: f64,
+    pub left_to_goto_start: f64,
     pub right_to_goto_end: f64,
     pub lift_hover_frame: f64,
+}
+
+pub struct ComputedTimelineSettings {
+    pub width_for_frames: f64,
+    pub max_visible_frames: u32,
+    pub end_frame: u32,
 }
 
 impl TimelineSettings {
@@ -36,17 +44,11 @@ impl TimelineSettings {
             frame_width: 10.0,
             frame_height: 10.0,
             frame_offset_x: 5.0,
-            left_to_goto_beginning: 15.0,
+            left_to_goto_start: 15.0,
             right_to_goto_end: 15.0,
             lift_hover_frame: 10.0,
         }
     }
-}
-
-pub struct ComputedTimelineSettings {
-    pub width_for_frames: f64,
-    pub max_visible_frames: u32,
-    pub end_frame: u32,
 }
 
 impl ComputedTimelineSettings {
@@ -89,36 +91,74 @@ impl Timeline {
             start_frame: 0,
             bounds: bounds,
             settings: TimelineSettings::new(),
+            hover_goto_start: false,
+            hover_goto_end: false,
         }
     }
 
     pub fn event<E: GenericEvent>(&mut self, e: &E) {
-        use input::MouseCursorEvent;
+        use input::{ MouseCursorEvent, PressEvent };
 
         if let Some(pos) = e.mouse_cursor_args() {
-            let computed_settings = ComputedTimelineSettings::new(self,
-                &self.settings);
+            // Detect hover frame.
+            {
+                let computed_settings = ComputedTimelineSettings::new(self,
+                    &self.settings);
 
-            let left_to_frame: f64 = self.settings.left_to_frame;
-            let frame_width: f64 = self.settings.frame_width;
-            let frame_offset_x: f64 = self.settings.frame_offset_x;
+                let left_to_frame: f64 = self.settings.left_to_frame;
+                let frame_width: f64 = self.settings.frame_width;
+                let frame_offset_x: f64 = self.settings.frame_offset_x;
 
-            let end_frame: u32 = computed_settings.end_frame;
+                let end_frame: u32 = computed_settings.end_frame;
 
-            let (x, y) = (pos[0], pos[1]);
+                let (x, y) = (pos[0], pos[1]);
 
-            let left = self.bounds[0] as f64 + left_to_frame;
-            let right = left + end_frame as f64 * (frame_width + frame_offset_x);
-            let top = self.bounds[1] as f64;
-            let bottom = top + self.bounds[3] as f64;
+                let left = self.bounds[0] as f64 + left_to_frame;
+                let right = left + end_frame as f64 * (frame_width + frame_offset_x);
+                let top = self.bounds[1] as f64;
+                let bottom = top + self.bounds[3] as f64;
 
-            if x < left || x > right
-            || y < top || y > bottom {
-                self.hover_frame = None;
-            } else {
-                let i: u32 = ((x - left) / (frame_width + frame_offset_x)) as u32;
-                self.hover_frame = Some(i);
+                if x < left || x > right
+                || y < top || y > bottom {
+                    self.hover_frame = None;
+                } else {
+                    let i: u32 = ((x - left) / (frame_width + frame_offset_x)) as u32;
+                    self.hover_frame = Some(i);
+                }
             }
+
+            // Detect hover over goto start and goto end buttons.
+            {
+                let left_to_goto_start = self.settings.left_to_goto_start;
+                let right_to_goto_end = self.settings.right_to_goto_end;
+                let top_to_frame = self.settings.top_to_frame;
+                let frame_width = self.settings.frame_width;
+                let frame_height = self.settings.frame_height;
+
+                let outside = |bounds: [f64; 4]| {
+                    let (x, y) = (pos[0], pos[1]);
+                    (x < bounds[0] || y < bounds[1]
+                    || x > bounds[0] + bounds[2] || y > bounds[1] + bounds[3])
+                };
+
+                self.hover_goto_start = !outside([
+                    self.bounds[0] as f64 + left_to_goto_start,
+                    self.bounds[1] as f64 + top_to_frame,
+                    frame_width,
+                    frame_height
+                ]);
+                self.hover_goto_end = !outside([
+                    self.bounds[0] as f64 + self.bounds[2] as f64
+                        - right_to_goto_end - frame_width,
+                    self.bounds[1] as f64 + top_to_frame,
+                    frame_width,
+                    frame_height
+                ]);
+            }
+        }
+
+        if let Some(button) = e.press_args() {
+
         }
     }
 
@@ -131,7 +171,7 @@ impl Timeline {
         let frame_width: f64 = self.settings.frame_width;
         let frame_height: f64 = self.settings.frame_height;
         let frame_offset_x: f64 = self.settings.frame_offset_x;
-        let left_to_goto_beginning: f64 = self.settings.left_to_goto_beginning;
+        let left_to_goto_start: f64 = self.settings.left_to_goto_start;
         let right_to_goto_end: f64 = self.settings.right_to_goto_end;
         let lift_hover_frame: f64 = self.settings.lift_hover_frame;
 
@@ -185,7 +225,7 @@ impl Timeline {
             }
         }
 
-        // Draw navigate to beginning button.
+        // Draw navigate to start or end buttons.
         {
             use graphics::Line;
             use graphics::math::*;
@@ -196,7 +236,7 @@ impl Timeline {
             drawutils::draw_goto_end(
                 at_beginning,
                 [
-                    self.bounds[0] as f64 + left_to_goto_beginning,
+                    self.bounds[0] as f64 + left_to_goto_start,
                     self.bounds[1] as f64 + top_to_frame
                 ],
                 [
