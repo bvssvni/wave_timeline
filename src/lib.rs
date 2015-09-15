@@ -1,6 +1,8 @@
 extern crate graphics;
+extern crate input;
 
 use graphics::{ Context, Graphics };
+use input::{ GenericEvent };
 
 pub struct Timeline {
     pub frames: u32,
@@ -19,6 +21,10 @@ impl Timeline {
             start_frame: 0,
             bounds: bounds,
         }
+    }
+
+    pub fn event<E: GenericEvent>(e: &E) {
+        
     }
 
     pub fn draw_timeline<G: Graphics>(&self, c: &Context, g: &mut G) {
