@@ -103,11 +103,15 @@ impl Timeline {
 
             let end_frame: u32 = computed_settings.end_frame;
 
-            let x = pos[0];
+            let (x, y) = (pos[0], pos[1]);
+            
             let left = self.bounds[0] as f64 + left_to_frame;
             let right = left + end_frame as f64 * (frame_width + frame_offset_x);
+            let top = self.bounds[1] as f64;
+            let bottom = top + self.bounds[3] as f64;
 
-            if x < left || x > right {
+            if x < left || x > right
+            || y < top || y > bottom {
                 self.hover_frame = None;
             } else {
                 let i: u32 = ((x - left) / (frame_width + frame_offset_x)) as u32;
