@@ -4,6 +4,8 @@ extern crate input;
 use graphics::{ Context, Graphics };
 use input::{ GenericEvent };
 
+mod drawutils;
+
 pub struct Timeline {
     pub frames: u32,
     pub current_frame: u32,
@@ -153,72 +155,13 @@ impl Timeline {
 
         // Draw navigate to beginning button.
         {
-            fn draw_triangle<G: Graphics>(
-                offset: graphics::math::Vec2d,
-                scale_up: graphics::math::Vec2d,
-                line: &Line,
-                c: &Context,
-                g: &mut G
-            ) {
-                use graphics::math::*;
-
-                let triangle = [
-                    [0.0, 0.0],
-                    [1.0, 0.5],
-                    [0.0, 1.0]
-                ];
-                let transform_triangle = multiply(
-                    translate(offset),
-                    scale(scale_up[0], scale_up[1])
-                );
-                let p = [
-                    transform_pos(transform_triangle, triangle[0]),
-                    transform_pos(transform_triangle, triangle[1]),
-                    transform_pos(transform_triangle, triangle[2])
-                ];
-                for i in 0..3 {
-                    let j = (i + 1) % 3;
-                    line.draw([p[i][0], p[i][1], p[j][0], p[j][1]], &c.draw_state, c.transform, g);
-                }
-            }
-
-            fn draw_double_arrow<G: Graphics>(
-                offset: graphics::math::Vec2d,
-                scale_up: graphics::math::Vec2d,
-                line: &Line,
-                c: &Context,
-                g: &mut G
-            ) {
-                draw_triangle(offset, scale_up, line, c, g);
-                let offset = [offset[0] + scale_up[0], offset[1]];
-                draw_triangle(offset, scale_up, line, c, g);
-            }
-
-            fn draw_goto_end<G: Graphics>(
-                at_end: bool,
-                offset: graphics::math::Vec2d,
-                scale_up: graphics::math::Vec2d,
-                line: &Line,
-                c: &Context,
-                g: &mut G
-            ) {
-                if !at_end {
-                    draw_triangle(offset, scale_up, line, c, g);
-                }
-
-                line.draw([
-                    offset[0] + scale_up[0], offset[1],
-                    offset[0] + scale_up[0], offset[1] + scale_up[1]
-                ], &c.draw_state, c.transform, g);
-            }
-
             use graphics::Line;
             use graphics::math::*;
 
             let line = Line::new([0.0, 0.0, 1.0, 1.0], 0.5);
 
             let at_beginning: bool = false;
-            draw_goto_end(
+            drawutils::draw_goto_end(
                 at_beginning,
                 [
                     self.bounds[0] as f64 + left_to_goto_beginning,
@@ -233,7 +176,7 @@ impl Timeline {
             );
 
             let at_end: bool = true;
-            draw_goto_end(
+            drawutils::draw_goto_end(
                 at_end,
                 [
                     self.bounds[0] as f64 + self.bounds[2] as f64
