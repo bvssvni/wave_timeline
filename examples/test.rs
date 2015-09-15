@@ -12,9 +12,14 @@ fn main() {
         .build()
         .unwrap();
 
-    let timeline = Timeline::new_frames_bounds(10, [10, 10, 300, 30]);
+    let mut timeline = {
+        let frames = 20;
+        let bounds = [10, 10, 300, 30];
+        Timeline::new_frames_bounds(frames, bounds)
+    };
 
     for e in window {
+        timeline.bounds[2] = e.size().width - 2 * 10;
         e.draw_2d(|c, g| {
             clear([1.0; 4], g);
 
