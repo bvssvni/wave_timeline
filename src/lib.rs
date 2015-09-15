@@ -192,7 +192,7 @@ impl Timeline {
 
             let line = Line::new([0.0, 0.0, 1.0, 1.0], 0.5);
 
-            let at_beginning: bool = false;
+            let at_beginning: bool = self.start_frame == 0;
             drawutils::draw_goto_end(
                 at_beginning,
                 [
@@ -207,7 +207,7 @@ impl Timeline {
                 c, g
             );
 
-            let at_end: bool = true;
+            let at_end: bool = end_frame >= self.frames;
             drawutils::draw_goto_end(
                 at_end,
                 [
