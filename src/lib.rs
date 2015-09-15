@@ -10,6 +10,33 @@ pub struct Timeline {
     pub hover_frame: Option<u32>,
     pub start_frame: u32,
     pub bounds: [u32; 4],
+    pub settings: TimelineSettings,
+}
+
+pub struct TimelineSettings {
+    pub left_to_frame: f64,
+    pub right_to_frame: f64,
+    pub top_to_frame: f64,
+    pub frame_width: f64,
+    pub frame_height: f64,
+    pub frame_offset_x: f64,
+    pub left_to_goto_beginning: f64,
+    pub right_to_goto_end: f64,
+}
+
+impl TimelineSettings {
+    pub fn new() -> TimelineSettings {
+        TimelineSettings {
+            left_to_frame: 20.0,
+            right_to_frame: 20.0,
+            top_to_frame: 15.0,
+            frame_width: 10.0,
+            frame_height: 10.0,
+            frame_offset_x: 5.0,
+            left_to_goto_beginning: 15.0,
+            right_to_goto_end: 15.0,
+        }
+    }
 }
 
 impl Timeline {
@@ -20,25 +47,30 @@ impl Timeline {
             hover_frame: None,
             start_frame: 0,
             bounds: bounds,
+            settings: TimelineSettings::new(),
         }
     }
 
     pub fn event<E: GenericEvent>(e: &E) {
-        
+        use input::MouseCursorEvent;
+
+        if let Some(pos) = e.mouse_cursor_args() {
+
+        }
     }
 
     pub fn draw_timeline<G: Graphics>(&self, c: &Context, g: &mut G) {
         use std::cmp::min;
 
-        let left_to_frame: f64 = 20.0;
-        let right_to_frame: f64 = 20.0;
-        let top_to_frame: f64 = 15.0;
-        let frame_width: f64 = 10.0;
-        let frame_height: f64 = 10.0;
-        let frame_offset_x: f64 = 5.0;
+        let left_to_frame: f64 = self.settings.left_to_frame;
+        let right_to_frame: f64 = self.settings.right_to_frame;
+        let top_to_frame: f64 = self.settings.top_to_frame;
+        let frame_width: f64 = self.settings.frame_width;
+        let frame_height: f64 = self.settings.frame_height;
+        let frame_offset_x: f64 = self.settings.frame_offset_x;
+        let left_to_goto_beginning: f64 = self.settings.left_to_goto_beginning;
+        let right_to_goto_end: f64 = self.settings.right_to_goto_end;
         let slide_offset: f64 = 0.0;
-        let left_to_goto_beginning: f64 = 15.0;
-        let right_to_goto_end: f64 = 15.0;
         let width_for_frames = self.bounds[2] as f64
             - left_to_frame - right_to_frame;
         let max_visible_frames: u32 =
