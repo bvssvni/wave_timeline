@@ -60,30 +60,65 @@ impl Timeline {
 
         // Draw navigate to beginning button.
         {
+            fn draw_triangle<G: Graphics>(
+                offset: graphics::math::Vec2d,
+                scale_up: graphics::math::Vec2d,
+                line: &Line,
+                c: &Context,
+                g: &mut G
+            ) {
+                use graphics::math::*;
+
+                let triangle = [
+                    [0.0, 0.0],
+                    [1.0, 0.5],
+                    [0.0, 1.0]
+                ];
+                let transform_triangle = multiply(
+                    translate(offset),
+                    scale(scale_up[0], scale_up[1])
+                );
+                let p = [
+                    transform_pos(transform_triangle, triangle[0]),
+                    transform_pos(transform_triangle, triangle[1]),
+                    transform_pos(transform_triangle, triangle[2])
+                ];
+                for i in 0..3 {
+                    let j = (i + 1) % 3;
+                    line.draw([p[i][0], p[i][1], p[j][0], p[j][1]], &c.draw_state, c.transform, g);
+                }
+            }
+
+            fn draw_double_arrow<G: Graphics>(
+                offset: graphics::math::Vec2d,
+                scale_up: graphics::math::Vec2d,
+                line: &Line,
+                c: &Context,
+                g: &mut G
+            ) {
+                draw_triangle(offset, scale_up, line, c, g);
+                let offset = [offset[0] + scale_up[0], offset[1]];
+                draw_triangle(offset, scale_up, line, c, g);
+            }
+
             use graphics::Line;
             use graphics::math::*;
 
-            let triangle = [
-                [0.0, 0.0],
-                [1.0, 0.5],
-                [0.0, 1.0]
-            ];
-            let offset = translate([self.bounds[0] as f64
-                + left_to_goto_beginning,
-                self.bounds[1] as f64
-                + top_to_frame]);
-            let scale_up = scale(-frame_width, frame_height);
-            let transform_triangle = multiply(offset, scale_up);
-
             let line = Line::new([0.0, 0.0, 1.0, 1.0], 0.5);
-            let p = [
-                transform_pos(transform_triangle, triangle[0]),
-                transform_pos(transform_triangle, triangle[1]),
-                transform_pos(transform_triangle, triangle[2])
-            ];
-            line.draw([p[0][0], p[0][1], p[1][0], p[1][1]], &c.draw_state, c.transform, g);
-            line.draw([p[1][0], p[1][1], p[2][0], p[2][1]], &c.draw_state, c.transform, g);
-            line.draw([p[2][0], p[2][1], p[0][0], p[0][1]], &c.draw_state, c.transform, g);
+
+            // Draw left double arrow.
+            draw_double_arrow(
+                [
+                    self.bounds[0] as f64 + left_to_goto_beginning,
+                    self.bounds[1] as f64 + top_to_frame
+                ],
+                [
+                    -frame_width * 0.5,
+                    frame_height
+                ],
+                &line,
+                c, g
+            );
         }
     }
 
