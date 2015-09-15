@@ -19,6 +19,7 @@ impl Timeline {
 
     pub fn draw_timeline<G: Graphics>(&self, c: &Context, g: &mut G) {
         let left_to_frame: f64 = 20.0;
+        let right_to_frame: f64 = 20.0;
         let top_to_frame: f64 = 15.0;
         let frame_width: f64 = 10.0;
         let frame_height: f64 = 10.0;
@@ -26,6 +27,18 @@ impl Timeline {
         let slide_offset: f64 = 0.0;
         let left_to_goto_beginning: f64 = 15.0;
         let right_to_goto_end: f64 = 15.0;
+        let width_for_frames = self.bounds[2] as f64
+            - left_to_frame - right_to_frame;
+        let max_visible_frames: u32 =
+            if width_for_frames < frame_width {
+                0
+            } else {
+                1
+                + (
+                    (width_for_frames - frame_width)
+                    / (frame_width + frame_offset_x)
+                ) as u32
+            };
 
         // Draw bounds to see where the control is.
         {
