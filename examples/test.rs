@@ -20,6 +20,7 @@ fn main() {
 
     for e in window {
         timeline.bounds[2] = e.size().width - 2 * 10;
+        timeline.event(&e);
         e.draw_2d(|c, g| {
             clear([1.0; 4], g);
 

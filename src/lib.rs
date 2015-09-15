@@ -90,11 +90,29 @@ impl Timeline {
         }
     }
 
-    pub fn event<E: GenericEvent>(e: &E) {
+    pub fn event<E: GenericEvent>(&mut self, e: &E) {
         use input::MouseCursorEvent;
 
         if let Some(pos) = e.mouse_cursor_args() {
+            let computed_settings = ComputedTimelineSettings::new(self,
+                &self.settings);
 
+            let left_to_frame: f64 = self.settings.left_to_frame;
+            let frame_width: f64 = self.settings.frame_width;
+            let frame_offset_x: f64 = self.settings.frame_offset_x;
+
+            let end_frame: u32 = computed_settings.end_frame;
+
+            let x = pos[0];
+            let left = self.bounds[0] as f64 + left_to_frame;
+            let right = left + end_frame as f64 * (frame_width + frame_offset_x);
+
+            if x < left || x > right {
+                self.hover_frame = None;
+            } else {
+                let i: u32 = ((x - left) / (frame_width + frame_offset_x)) as u32;
+                self.hover_frame = Some(i);
+            }
         }
     }
 
