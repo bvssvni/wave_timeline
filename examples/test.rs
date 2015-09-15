@@ -13,7 +13,7 @@ fn main() {
         .unwrap();
 
     let mut timeline = {
-        let frames = 20;
+        let frames = 100;
         let bounds = [10, 10, 300, 30];
         Timeline::new_frames_bounds(frames, bounds)
     };

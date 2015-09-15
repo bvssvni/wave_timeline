@@ -5,6 +5,7 @@ use graphics::{ Context, Graphics };
 pub struct Timeline {
     pub frames: u32,
     pub current_frame: u32,
+    pub hover_frame: Option<u32>,
     pub start_frame: u32,
     pub bounds: [u32; 4],
 }
@@ -14,6 +15,7 @@ impl Timeline {
         Timeline {
             frames: frames,
             current_frame: 0,
+            hover_frame: None,
             start_frame: 0,
             bounds: bounds,
         }
@@ -68,6 +70,9 @@ impl Timeline {
 
             let rect = Rectangle::new_border([0.0, 0.0, 1.0, 1.0], 0.5);
             for i in 0..end_frame - self.start_frame {
+                // Don't draw the hover frame.
+                if Some(i) == self.hover_frame { continue; }
+
                 let bounds = [
                     self.bounds[0] as f64 + left_to_frame
                         + i as f64 * (frame_width + frame_offset_x)
