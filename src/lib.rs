@@ -24,6 +24,7 @@ pub struct TimelineSettings {
     pub frame_offset_x: f64,
     pub left_to_goto_beginning: f64,
     pub right_to_goto_end: f64,
+    pub lift_hover_frame: f64,
 }
 
 impl TimelineSettings {
@@ -37,6 +38,7 @@ impl TimelineSettings {
             frame_offset_x: 5.0,
             left_to_goto_beginning: 15.0,
             right_to_goto_end: 15.0,
+            lift_hover_frame: 10.0,
         }
     }
 }
@@ -104,7 +106,7 @@ impl Timeline {
             let end_frame: u32 = computed_settings.end_frame;
 
             let (x, y) = (pos[0], pos[1]);
-            
+
             let left = self.bounds[0] as f64 + left_to_frame;
             let right = left + end_frame as f64 * (frame_width + frame_offset_x);
             let top = self.bounds[1] as f64;
@@ -131,6 +133,7 @@ impl Timeline {
         let frame_offset_x: f64 = self.settings.frame_offset_x;
         let left_to_goto_beginning: f64 = self.settings.left_to_goto_beginning;
         let right_to_goto_end: f64 = self.settings.right_to_goto_end;
+        let lift_hover_frame: f64 = self.settings.lift_hover_frame;
 
         let computed_settings = ComputedTimelineSettings::new(self, &self.settings);
 
@@ -158,19 +161,26 @@ impl Timeline {
         {
             use graphics::Rectangle;
 
+            let frame_bounds = |i: u32, lift: f64| [
+                self.bounds[0] as f64 + left_to_frame
+                    + i as f64 * (frame_width + frame_offset_x)
+                    - slide_offset,
+                self.bounds[1] as f64 + top_to_frame - lift,
+                frame_width,
+                frame_height
+            ];
+
             let rect = Rectangle::new_border([0.0, 0.0, 1.0, 1.0], 0.5);
             for i in 0..end_frame - self.start_frame {
                 // Don't draw the hover frame.
                 if Some(i) == self.hover_frame { continue; }
 
-                let bounds = [
-                    self.bounds[0] as f64 + left_to_frame
-                        + i as f64 * (frame_width + frame_offset_x)
-                        - slide_offset,
-                    self.bounds[1] as f64 + top_to_frame,
-                    frame_width,
-                    frame_height
-                ];
+                let bounds = frame_bounds(i, 0.0);
+                rect.draw(bounds, &c.draw_state, c.transform, g);
+            }
+
+            if let Some(i) = self.hover_frame {
+                let bounds = frame_bounds(i, lift_hover_frame);
                 rect.draw(bounds, &c.draw_state, c.transform, g);
             }
         }
