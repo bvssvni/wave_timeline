@@ -5,6 +5,7 @@ use graphics::{ Context, Graphics };
 pub struct Timeline {
     pub frames: u32,
     pub current_frame: u32,
+    pub start_frame: u32,
     pub bounds: [u32; 4],
 }
 
@@ -13,11 +14,14 @@ impl Timeline {
         Timeline {
             frames: frames,
             current_frame: 0,
+            start_frame: 0,
             bounds: bounds,
         }
     }
 
     pub fn draw_timeline<G: Graphics>(&self, c: &Context, g: &mut G) {
+        use std::cmp::min;
+
         let left_to_frame: f64 = 20.0;
         let right_to_frame: f64 = 20.0;
         let top_to_frame: f64 = 15.0;
@@ -39,6 +43,10 @@ impl Timeline {
                     / (frame_width + frame_offset_x)
                 ) as u32
             };
+        let end_frame = min(
+            self.frames,
+            self.start_frame + max_visible_frames
+        );
 
         // Draw bounds to see where the control is.
         {
