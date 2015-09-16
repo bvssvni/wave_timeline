@@ -44,8 +44,8 @@ impl TimelineSettings {
             frame_width: 10.0,
             frame_height: 10.0,
             frame_offset_x: 5.0,
-            left_to_goto_start: 15.0,
-            right_to_goto_end: 15.0,
+            left_to_goto_start: 5.0,
+            right_to_goto_end: 5.0,
             lift_hover_frame: 10.0,
         }
     }
@@ -158,7 +158,15 @@ impl Timeline {
         }
 
         if let Some(button) = e.press_args() {
+            use input::{ Button, MouseButton };
 
+            if button == Button::Mouse(MouseButton::Left) {
+                if self.hover_goto_start {
+                    println!("TEST goto start");
+                } else if self.hover_goto_end {
+                    println!("TEST goto end");
+                }
+            }
         }
     }
 
@@ -182,6 +190,9 @@ impl Timeline {
         let width_for_frames = computed_settings.width_for_frames;
         let max_visible_frames: u32 = computed_settings.max_visible_frames;
         let end_frame = computed_settings.end_frame;
+
+        let blue = [0.0, 0.0, 1.0, 1.0];
+        let red = [1.0, 0.0, 0.0, 1.0];
 
         // Draw bounds to see where the control is.
         {
@@ -210,7 +221,7 @@ impl Timeline {
                 frame_height
             ];
 
-            let rect = Rectangle::new_border([0.0, 0.0, 1.0, 1.0], 0.5);
+            let rect = Rectangle::new_border(blue, 0.5);
             for i in 0..end_frame - self.start_frame {
                 // Don't draw the hover frame.
                 if Some(i) == self.hover_frame { continue; }
@@ -236,14 +247,14 @@ impl Timeline {
             drawutils::draw_goto_end(
                 at_beginning,
                 [
-                    self.bounds[0] as f64 + left_to_goto_start,
+                    self.bounds[0] as f64 + left_to_goto_start + frame_width,
                     self.bounds[1] as f64 + top_to_frame
                 ],
                 [
                     -frame_width * 0.5,
                     frame_height
                 ],
-                &line,
+                &Line::new(if self.hover_goto_start { red } else { blue }, 0.5),
                 c, g
             );
 
@@ -252,14 +263,14 @@ impl Timeline {
                 at_end,
                 [
                     self.bounds[0] as f64 + self.bounds[2] as f64
-                        - right_to_goto_end,
+                        - right_to_goto_end - frame_width,
                     self.bounds[1] as f64 + top_to_frame
                 ],
                 [
                     frame_width * 0.5,
                     frame_height
                 ],
-                &line,
+                &Line::new(if self.hover_goto_end { red } else { blue }, 0.5),
                 c, g
             );
         }
