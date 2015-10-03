@@ -18,14 +18,18 @@ pub struct Timeline {
 }
 
 pub struct TimelineSettings {
-    pub left_to_frame: f64,
-    pub right_to_frame: f64,
-    pub top_to_frame: f64,
+    pub offset: Offset,
     pub frame_size: [f64; 2],
     pub frame_offset_x: f64,
     pub left_to_goto_start: f64,
     pub right_to_goto_end: f64,
     pub lift_hover_frame: f64,
+}
+
+pub struct Offset {
+    pub left: f64,
+    pub right: f64,
+    pub top: f64,
 }
 
 pub struct ComputedTimelineSettings {
@@ -37,9 +41,9 @@ pub struct ComputedTimelineSettings {
 impl TimelineSettings {
     pub fn new() -> TimelineSettings {
         TimelineSettings {
-            left_to_frame: 20.0,
-            right_to_frame: 20.0,
-            top_to_frame: 15.0,
+            offset: Offset {
+                left: 20.0, right: 20.0, top: 15.0,
+            },
             frame_size: [10.0, 10.0],
             frame_offset_x: 5.0,
             left_to_goto_start: 5.0,
@@ -56,7 +60,7 @@ impl ComputedTimelineSettings {
         use std::cmp::min;
 
         let width_for_frames = timeline.bounds[2] as f64
-            - settings.left_to_frame - settings.right_to_frame;
+            - settings.offset.left - settings.offset.right;
         let max_visible_frames: u32 =
             if width_for_frames < settings.frame_size[0] {
                 0
@@ -103,7 +107,7 @@ impl Timeline {
                 let computed_settings = ComputedTimelineSettings::new(self,
                     &self.settings);
 
-                let left_to_frame: f64 = self.settings.left_to_frame;
+                let left_to_frame: f64 = self.settings.offset.left;
                 let frame_width: f64 = self.settings.frame_size[0];
                 let frame_offset_x: f64 = self.settings.frame_offset_x;
 
@@ -129,7 +133,7 @@ impl Timeline {
             {
                 let left_to_goto_start = self.settings.left_to_goto_start;
                 let right_to_goto_end = self.settings.right_to_goto_end;
-                let top_to_frame = self.settings.top_to_frame;
+                let top_to_frame = self.settings.offset.top;
                 let frame_width = self.settings.frame_size[0];
                 let frame_height = self.settings.frame_size[1];
 
@@ -171,9 +175,9 @@ impl Timeline {
     pub fn draw_timeline<G: Graphics>(&self, c: &Context, g: &mut G) {
         use std::cmp::min;
 
-        let left_to_frame: f64 = self.settings.left_to_frame;
-        let right_to_frame: f64 = self.settings.right_to_frame;
-        let top_to_frame: f64 = self.settings.top_to_frame;
+        let left_to_frame: f64 = self.settings.offset.left;
+        let right_to_frame: f64 = self.settings.offset.right;
+        let top_to_frame: f64 = self.settings.offset.top;
         let frame_width: f64 = self.settings.frame_size[0];
         let frame_height: f64 = self.settings.frame_size[1];
         let frame_offset_x: f64 = self.settings.frame_offset_x;
