@@ -21,8 +21,7 @@ pub struct TimelineSettings {
     pub left_to_frame: f64,
     pub right_to_frame: f64,
     pub top_to_frame: f64,
-    pub frame_width: f64,
-    pub frame_height: f64,
+    pub frame_size: [f64; 2],
     pub frame_offset_x: f64,
     pub left_to_goto_start: f64,
     pub right_to_goto_end: f64,
@@ -41,8 +40,7 @@ impl TimelineSettings {
             left_to_frame: 20.0,
             right_to_frame: 20.0,
             top_to_frame: 15.0,
-            frame_width: 10.0,
-            frame_height: 10.0,
+            frame_size: [10.0, 10.0],
             frame_offset_x: 5.0,
             left_to_goto_start: 5.0,
             right_to_goto_end: 5.0,
@@ -60,13 +58,13 @@ impl ComputedTimelineSettings {
         let width_for_frames = timeline.bounds[2] as f64
             - settings.left_to_frame - settings.right_to_frame;
         let max_visible_frames: u32 =
-            if width_for_frames < settings.frame_width {
+            if width_for_frames < settings.frame_size[0] {
                 0
             } else {
                 1
                 + (
-                    (width_for_frames - settings.frame_width)
-                    / (settings.frame_width + settings.frame_offset_x)
+                    (width_for_frames - settings.frame_size[0])
+                    / (settings.frame_size[0] + settings.frame_offset_x)
                 ) as u32
             };
         let end_frame = min(
@@ -106,7 +104,7 @@ impl Timeline {
                     &self.settings);
 
                 let left_to_frame: f64 = self.settings.left_to_frame;
-                let frame_width: f64 = self.settings.frame_width;
+                let frame_width: f64 = self.settings.frame_size[0];
                 let frame_offset_x: f64 = self.settings.frame_offset_x;
 
                 let end_frame: u32 = computed_settings.end_frame;
@@ -132,8 +130,8 @@ impl Timeline {
                 let left_to_goto_start = self.settings.left_to_goto_start;
                 let right_to_goto_end = self.settings.right_to_goto_end;
                 let top_to_frame = self.settings.top_to_frame;
-                let frame_width = self.settings.frame_width;
-                let frame_height = self.settings.frame_height;
+                let frame_width = self.settings.frame_size[0];
+                let frame_height = self.settings.frame_size[1];
 
                 let outside = |bounds: [f64; 4]| {
                     let (x, y) = (pos[0], pos[1]);
@@ -176,8 +174,8 @@ impl Timeline {
         let left_to_frame: f64 = self.settings.left_to_frame;
         let right_to_frame: f64 = self.settings.right_to_frame;
         let top_to_frame: f64 = self.settings.top_to_frame;
-        let frame_width: f64 = self.settings.frame_width;
-        let frame_height: f64 = self.settings.frame_height;
+        let frame_width: f64 = self.settings.frame_size[0];
+        let frame_height: f64 = self.settings.frame_size[1];
         let frame_offset_x: f64 = self.settings.frame_offset_x;
         let left_to_goto_start: f64 = self.settings.left_to_goto_start;
         let right_to_goto_end: f64 = self.settings.right_to_goto_end;
