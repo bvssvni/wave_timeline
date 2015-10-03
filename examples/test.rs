@@ -1,11 +1,13 @@
 extern crate piston_window;
+extern crate sdl2_window;
 extern crate wave_timeline;
 
+use sdl2_window::Sdl2Window;
 use piston_window::*;
 use wave_timeline::*;
 
 fn main() {
-    let window: PistonWindow =
+    let window: PistonWindow<(), Sdl2Window> =
         WindowSettings::new("wave_timeline: test", [1024, 768])
         .exit_on_esc(true)
         .samples(8)
