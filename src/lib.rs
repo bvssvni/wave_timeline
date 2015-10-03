@@ -5,6 +5,8 @@ use graphics::{ Context, Graphics };
 use input::{ GenericEvent };
 
 mod drawutils;
+mod rectangle_box;
+pub mod new_timeline;
 
 pub struct Timeline {
     pub frames: u32,
@@ -42,13 +44,13 @@ impl TimelineSettings {
     pub fn new() -> TimelineSettings {
         TimelineSettings {
             offset: Offset {
-                left: 20.0, right: 20.0, top: 15.0,
+                left: 20.0, right: 20.0, top: 20.0,
             },
-            frame_size: [10.0, 10.0],
+            frame_size: [20.0, 20.0],
             frame_offset_x: 5.0,
             left_to_goto_start: 5.0,
             right_to_goto_end: 5.0,
-            lift_hover_frame: 10.0,
+            lift_hover_frame: 15.0,
         }
     }
 }

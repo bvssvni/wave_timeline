@@ -16,10 +16,11 @@ fn main() {
 
     let mut timeline = {
         let frames = 100;
-        let bounds = [10, 10, 300, 30];
+        let bounds = [10, 600, 300, 50];
         Timeline::new_frames_bounds(frames, bounds)
     };
 
+    let mut toggle = 0;
     for e in window {
         timeline.bounds[2] = e.size().width - 2 * 10;
         timeline.event(&e);
@@ -29,5 +30,19 @@ fn main() {
             timeline.draw_timeline(&c, g);
             timeline.draw_drag(&c, g);
         });
+        if let Some(button) = e.press_args() {
+            if button == Button::Mouse(MouseButton::Left) {
+                toggle += 1;
+                match toggle % 2 {
+                    0 => {
+                        timeline.bounds[3] += 10;
+                    }
+                    1 => {
+                        timeline.bounds[3] -= 10;
+                    }
+                    _ => {}
+                }
+            }
+        }
     }
 }
