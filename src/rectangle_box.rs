@@ -15,6 +15,8 @@ pub enum Child {
     Draw,
     /// Split into left, middle and right sections.
     LeftMiddleRight(Box<LeftMiddleRight>),
+    /// Scroll.
+    ScrollHorizontal(Box<ScrollHorizontal>)
 }
 
 /// Splits into left, middle and right sections.
@@ -30,4 +32,9 @@ pub struct LeftMiddleRight {
     pub middle: RectangleBox,
     /// The right rectangle box.
     pub right: RectangleBox,
+}
+
+/// Scrolls horizontally.
+pub struct ScrollHorizontal {
+    pub repeat: RectangleBox,
 }
