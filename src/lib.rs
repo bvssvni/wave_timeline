@@ -1,6 +1,6 @@
 extern crate graphics;
 extern crate input;
-extern crate float;
+extern crate rect;
 
 use graphics::{ Context, Graphics };
 use input::{ GenericEvent };
@@ -8,7 +8,6 @@ use input::{ GenericEvent };
 mod drawutils;
 mod rectangle_box;
 pub mod timeline_split;
-pub mod rect;
 
 pub struct Timeline {
     pub frames: u32,

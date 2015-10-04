@@ -1,11 +1,12 @@
 extern crate piston_window;
 extern crate sdl2_window;
 extern crate wave_timeline;
+extern crate rect;
 
 use sdl2_window::Sdl2Window;
 use piston_window::*;
 use wave_timeline::timeline_split::*;
-use wave_timeline::rect::*;
+use rect::*;
 
 fn main() {
     let window: PistonWindow<(), Sdl2Window> =
