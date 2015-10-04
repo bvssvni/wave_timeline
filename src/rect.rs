@@ -184,33 +184,6 @@ pub trait Rect: Sized {
              Rect::from_x_y_w_h(x, y + h - val, w, val))
          }
     }
-    /// Splits rectangle horizontally into a left, middle and right rectangles.
-    /// The margin shrinks the middle rectangle.
-    fn split_left_right_margin(
-        &self,
-        left: Self::Scalar,
-        right: Self::Scalar,
-        margin: Self::Scalar
-    ) -> (Self, Self, Self) {
-        use float::{ FromPrimitive, One, Zero };
-
-        let _0: Self::Scalar = Zero::zero();
-        let _05: Self::Scalar = FromPrimitive::from_f64(0.5);
-        let _2: Self::Scalar = FromPrimitive::from_f64(2.0);
-        let a_third: Self::Scalar = FromPrimitive::from_f64(1.0 / 3.0);
-        let a_third = a_third * self.w();
-        let left = if left > a_third { a_third } else { left };
-        let right = if right > a_third { a_third } else { left };
-        let middle = self.w() - left - right;
-        let left_rect = Rect::from_x_y_w_h(self.x(), self.y(), left, self.h());
-        let right_rect = Rect::from_x_y_w_h(self.x() + left + middle, self.y(),
-            right, self.h());
-        let margin = if middle < _2 * margin { _05 * middle } else { margin };
-        (left_rect,
-         Rect::from_x_y_w_h(self.x() + left + margin, self.y(),
-            middle - _2 * margin, self.h()),
-         right_rect)
-    }
 }
 
 impl Rect for [f64; 4] {
