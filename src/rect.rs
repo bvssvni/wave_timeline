@@ -232,28 +232,6 @@ pub trait Rect: Sized {
             (top, middle, bottom)
         }
     }
-    /// Calls closure for each cell in a grid.
-    fn grid<F>(&self, w: u32, h: u32, mut f: F)
-        where F: FnMut(&Self)
-    {
-        use float::FromPrimitive;
-
-        let w_val: Self::Scalar = FromPrimitive::from_u32(w);
-        let h_val: Self::Scalar = FromPrimitive::from_u32(h);
-        let cell_width = self.w() / w_val;
-        let cell_height = self.h() / h_val;
-
-        let mut cell: Self = Rect::from_x_y_w_h(self.x(), self.y(), w_val, h_val);
-        for y in 0..h {
-            let y = FromPrimitive::from_u32(y);
-            cell.set_y(self.y() + cell_height * y);
-            for x in 0..w {
-                let x = FromPrimitive::from_u32(x);
-                cell.set_x(self.x() + cell_width * x);
-                f(&cell)
-            }
-        }
-    }
 }
 
 impl Rect for [f64; 4] {
