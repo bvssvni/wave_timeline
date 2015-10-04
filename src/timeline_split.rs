@@ -1,3 +1,7 @@
+//! Timeline split.
+
+#![deny(missing_docs)]
+
 use graphics::*;
 use rect::Rect;
 
@@ -5,7 +9,7 @@ const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
 const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
 const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
 
-struct TimelineSettings {
+struct TimelineSplitSettings {
     rect: [f64; 4],
     margin: f64,
     left: f64,
@@ -13,14 +17,14 @@ struct TimelineSettings {
     top: f64,
 }
 
-struct TimelineLayout {
+struct TimelineSplitLayout {
     left: [f64; 4],
     middle: [f64; 4],
     right: [f64; 4],
 }
 
-impl TimelineSettings {
-    fn call(&self) -> Option<TimelineLayout> {
+impl TimelineSplitSettings {
+    fn call(&self) -> Option<TimelineSplitLayout> {
         let inside = self.rect.margin(self.margin);
         // Use the same size of goto start and goto end buttons as the height
         // of frames.
@@ -32,7 +36,7 @@ impl TimelineSettings {
         let (left, middle, right) = inside.split_left_right_margin(
             rest, rest, self.margin
         );
-        Some(TimelineLayout {
+        Some(TimelineSplitLayout {
             left: left,
             middle: middle,
             right: right
@@ -45,11 +49,12 @@ fn draw_box<G: Graphics>(color: [f32; 4], rect: [f64; 4], c: &Context, g: &mut G
         .draw(rect, &c.draw_state, c.transform, g);
 }
 
-pub fn draw_timeline<G: Graphics>(rect: [u32; 4], c: &Context, g: &mut G) {
+/// Test drawing for timeline split.
+pub fn test_draw_timeline<G: Graphics>(rect: [u32; 4], c: &Context, g: &mut G) {
     let top = 20.0;
     let top_factor = 0.3;
     if let Some(layout) =
-        (TimelineSettings {
+        (TimelineSplitSettings {
             rect: Rect::from_u32(rect),
             margin: 4.0,
             left: 40.0,

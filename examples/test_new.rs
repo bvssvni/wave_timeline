@@ -4,7 +4,6 @@ extern crate wave_timeline;
 
 use sdl2_window::Sdl2Window;
 use piston_window::*;
-use wave_timeline::*;
 
 fn main() {
     let window: PistonWindow<(), Sdl2Window> =
@@ -23,16 +22,18 @@ fn main() {
             height = pos[1];
         }
         e.draw_2d(|c, g| {
+            use wave_timeline::timeline_split::test_draw_timeline as draw;
+
             clear([1.0; 4], g);
 
-            wave_timeline::new_timeline::draw_timeline([0, 0, 500, 50], &c, g);
-            wave_timeline::new_timeline::draw_timeline([100, 100, 600, 80], &c, g);
+            draw([0, 0, 500, 50], &c, g);
+            draw([100, 100, 600, 80], &c, g);
 
-            wave_timeline::new_timeline::draw_timeline([0, 200, 100, 80], &c, g);
-            wave_timeline::new_timeline::draw_timeline([0, 300, 190, 80], &c, g);
-            wave_timeline::new_timeline::draw_timeline([0, 400, 200, 80], &c, g);
-            wave_timeline::new_timeline::draw_timeline([0, 500, 210, height as u32], &c, g);
-            wave_timeline::new_timeline::draw_timeline([0, 600, width as u32, 80], &c, g);
+            draw([0, 200, 100, 80], &c, g);
+            draw([0, 300, 190, 80], &c, g);
+            draw([0, 400, 200, 80], &c, g);
+            draw([0, 500, 210, height as u32], &c, g);
+            draw([0, 600, width as u32, 80], &c, g);
         });
     }
 }

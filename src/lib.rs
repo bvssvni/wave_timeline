@@ -7,7 +7,7 @@ use input::{ GenericEvent };
 
 mod drawutils;
 mod rectangle_box;
-pub mod new_timeline;
+pub mod timeline_split;
 mod rect;
 
 pub struct Timeline {
