@@ -2,30 +2,35 @@
 
 #![deny(missing_docs)]
 
-use graphics::*;
 use rect::Rect;
 
-const RED: [f32; 4] = [1.0, 0.0, 0.0, 1.0];
-const GREEN: [f32; 4] = [0.0, 1.0, 0.0, 1.0];
-const BLUE: [f32; 4] = [0.0, 0.0, 1.0, 1.0];
-
-///
+/// The input data for calculating the timeline split layout.
 pub struct TimelineSplitInput {
-    rect: [f64; 4],
-    margin: f64,
-    left: f64,
-    right: f64,
-    top: f64,
+    /// The bounds rectangle of the whole timeline.
+    pub rect: [f64; 4],
+    /// The margin from edge of bounds and at the splits.
+    pub margin: f64,
+    /// The size of the left panel.
+    pub left: f64,
+    /// The size of the right panel.
+    pub right: f64,
+    /// The height of items in the middle panel.
+    pub top: f64,
 }
 
-struct TimelineSplitOutput {
-    left: [f64; 4],
-    middle: [f64; 4],
-    right: [f64; 4],
+/// The output data for timeline split layout.
+pub struct TimelineSplitOutput {
+    /// The bounds of the left panel.
+    pub left: [f64; 4],
+    /// The bounds of the middle panel.
+    pub middle: [f64; 4],
+    /// The bounds of the right panel.
+    pub right: [f64; 4],
 }
 
 impl TimelineSplitInput {
-    fn call(&self) -> Option<TimelineSplitOutput> {
+    /// Computes the timeline split output.
+    pub fn call(&self) -> Option<TimelineSplitOutput> {
         let inside = self.rect.margin(self.margin);
         // Use the same size of goto start and goto end buttons as the height
         // of frames.
@@ -42,36 +47,5 @@ impl TimelineSplitInput {
             middle: middle,
             right: right
         })
-    }
-}
-
-fn draw_box<G: Graphics>(color: [f32; 4], rect: [f64; 4], c: &Context, g: &mut G) {
-    Rectangle::new_border(color, 0.5)
-        .draw(rect, &c.draw_state, c.transform, g);
-}
-
-/// Test drawing for timeline split.
-pub fn test_draw_timeline<G: Graphics>(rect: [u32; 4], c: &Context, g: &mut G) {
-    let top = 20.0;
-    let top_factor = 0.3;
-    if let Some(layout) =
-        (TimelineSplitInput {
-            rect: Rect::from_u32(rect),
-            margin: 4.0,
-            left: 40.0,
-            right: 40.0,
-            top: top,
-        }).call() {
-
-        draw_box(BLUE, layout.left, c, g);
-        draw_box(BLUE, layout.middle, c, g);
-        draw_box(BLUE, layout.right, c, g);
-
-        let (_, left) = layout.left.split_top(top, top_factor);
-        draw_box(RED, left, c, g);
-        let (_, middle) = layout.middle.split_top(top, top_factor);
-        draw_box(RED, middle, c, g);
-        let (_, right) = layout.right.split_top(top, top_factor);
-        draw_box(RED, right, c, g);
     }
 }

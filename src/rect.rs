@@ -1,5 +1,7 @@
 #![deny(missing_docs)]
 
+//! Helper methods for computing simple rectangle layout.
+
 use float::Float;
 
 /// Helper methods for computing simple rectangle layout.
