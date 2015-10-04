@@ -192,45 +192,22 @@ pub trait Rect: Sized {
     ) -> (Self, Self, Self) {
         use float::{ FromPrimitive, One, Zero };
 
-        let a_third = FromPrimitive::from_f64(1.0 / 3.0);
-        let (left, rest) = self.split_left(left, a_third);
-        let (mut middle, right) = rest.split_right(right, a_third);
+        let _0: Self::Scalar = Zero::zero();
+        let _05: Self::Scalar = FromPrimitive::from_f64(0.5);
         let _2: Self::Scalar = FromPrimitive::from_f64(2.0);
-        let (x, y, w, h) = middle.xywh();
-        if w < _2 * margin {
-            let _05: Self::Scalar = FromPrimitive::from_f64(0.5);
-            let _0: Self::Scalar = Zero::zero();
-            (left, Rect::from_x_y_w_h(x + _05 * w, y, _0, h), right)
-        } else {
-            middle.set_x(x + margin);
-            middle.set_w(w - _2 * margin);
-            (left, middle, right)
-        }
-    }
-    /// Splits rectangle vertically into a top, middle and bottom rectangles.
-    /// The margin shrinks the middle rectangle.
-    fn split_top_bottom_margin(
-        &self,
-        top: Self::Scalar,
-        bottom: Self::Scalar,
-        margin: Self::Scalar
-    ) -> (Self, Self, Self) {
-        use float::{ FromPrimitive, One, Zero };
-
-        let a_third = FromPrimitive::from_f64(1.0 / 3.0);
-        let (top, rest) = self.split_top(top, a_third);
-        let (mut middle, bottom) = rest.split_bottom(bottom, a_third);
-        let _2: Self::Scalar = FromPrimitive::from_f64(2.0);
-        let (x, y, w, h) = middle.xywh();
-        if h < _2 * margin {
-            let _05: Self::Scalar = FromPrimitive::from_f64(0.5);
-            let _0: Self::Scalar = Zero::zero();
-            (top, Rect::from_x_y_w_h(x, y + _05 * h, w, _0), bottom)
-        } else {
-            middle.set_y(y + margin);
-            middle.set_h(h - _2 * margin);
-            (top, middle, bottom)
-        }
+        let a_third: Self::Scalar = FromPrimitive::from_f64(1.0 / 3.0);
+        let a_third = a_third * self.w();
+        let left = if left > a_third { a_third } else { left };
+        let right = if right > a_third { a_third } else { left };
+        let middle = self.w() - left - right;
+        let left_rect = Rect::from_x_y_w_h(self.x(), self.y(), left, self.h());
+        let right_rect = Rect::from_x_y_w_h(self.x() + left + middle, self.y(),
+            right, self.h());
+        let margin = if middle < _2 * margin { _05 * middle } else { margin };
+        (left_rect,
+         Rect::from_x_y_w_h(self.x() + left + margin, self.y(),
+            middle - _2 * margin, self.h()),
+         right_rect)
     }
 }
 
@@ -312,23 +289,5 @@ mod tests {
             ([0.0, 0.0, 10.0, 5.0], [0.0, 5.0, 10.0, 5.0]));
         assert_eq!([0.0, 0.0, 10.0, 100.0].split_top(30.0, 0.5),
             ([0.0, 0.0, 10.0, 30.0], [0.0, 30.0, 10.0, 70.0]));
-    }
-
-    #[test]
-    fn split_left_right_margin() {
-        assert_eq!([0.0, 0.0, 100.0, 10.0]
-            .split_left_right_margin(10.0, 10.0, 2.0),
-            ([0.0, 0.0, 10.0, 10.0],
-             [12.0, 0.0, 76.0, 10.0],
-             [90.0, 0.0, 10.0, 10.0]));
-    }
-
-    #[test]
-    fn split_top_bottom_margin() {
-        assert_eq!([0.0, 0.0, 10.0, 100.0]
-            .split_top_bottom_margin(10.0, 10.0, 2.0),
-            ([0.0, 0.0, 10.0, 10.0],
-             [0.0, 12.0, 10.0, 76.0],
-             [0.0, 90.0, 10.0, 10.0]));
     }
 }
