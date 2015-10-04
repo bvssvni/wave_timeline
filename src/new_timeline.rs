@@ -22,10 +22,12 @@ struct TimelineLayout {
 impl TimelineSettings {
     fn call(&self) -> Option<TimelineLayout> {
         let inside = self.rect.margin(self.margin);
-        let rest = if inside[3] < self.top {
+        // Use the same size of goto start and goto end buttons as the height
+        // of frames.
+        let rest = if inside.h() < self.top {
                 0.0
             } else {
-                inside[3] - self.top
+                inside.h() - self.top
             };
         let (left, middle, right) = inside.split_left_right_margin(
             rest, rest, self.margin
